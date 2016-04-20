@@ -5,10 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by aryeh on 3/21/2016.
@@ -16,32 +13,43 @@ import java.util.Date;
 @Parcel
 public class Movie {
     Integer id;
-    String original_title;
-    String poster_path;
+    String originalTitle;
+    String thumbnailPath;
     String overview;
-    Double vote_average;
-    Date release_date;
+    Double voteAverage;
+    String releaseYear;
+
+    public Movie(){}
+
+    public Movie(Integer id, String originalTitle, String thumbnailPath, String overview, Double voteAverage, String releaseYear) {
+        this.id = id;
+        this.originalTitle = originalTitle;
+        this.thumbnailPath = thumbnailPath;
+        this.overview = overview;
+        this.voteAverage = voteAverage;
+        this.releaseYear = releaseYear;
+    }
 
     public Integer getId() { return id; }
 
-    public String getOriginal_title() {
-        return original_title;
+    public String getOriginalTitle() {
+        return originalTitle;
     }
 
-    public String getPoster_path() {
-        return poster_path;
+    public String getThumbnailPath() {
+        return thumbnailPath;
     }
 
     public String getOverview() {
         return overview;
     }
 
-    public Double getVote_average() {
-        return vote_average;
+    public Double getVoteAverage() {
+        return voteAverage;
     }
 
-    public Date getRelease_date() {
-        return release_date;
+    public String getReleaseYear() {
+        return releaseYear;
     }
 
     public static Movie fromJson(JSONObject jsonObject) {
@@ -49,17 +57,12 @@ public class Movie {
         // Deserialize json into object fields
         try {
             movie.id = jsonObject.getInt("id");
-            movie.original_title = jsonObject.getString("original_title");
-            movie.poster_path = "http://image.tmdb.org/t/p/w185" + jsonObject.getString("poster_path");
+            movie.originalTitle = jsonObject.getString("original_title");
+            movie.thumbnailPath = "http://image.tmdb.org/t/p/w185" + jsonObject.getString("poster_path");
             movie.overview = jsonObject.getString("overview");
-            movie.vote_average = jsonObject.getDouble("vote_average");
+            movie.voteAverage = jsonObject.getDouble("vote_average");
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                movie.release_date = simpleDateFormat.parse(jsonObject.getString("release_date"));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            movie.releaseYear = jsonObject.getString("release_date").substring(0, 4);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

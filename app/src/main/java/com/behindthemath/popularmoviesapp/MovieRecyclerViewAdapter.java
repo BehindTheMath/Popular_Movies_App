@@ -1,8 +1,6 @@
 package com.behindthemath.popularmoviesapp;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,73 +10,71 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+//import butterknife.Bind;
+//import butterknife.ButterKnife;
+
 /**
  * Created by aryeh on 3/21/2016.
  */
 public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecyclerViewAdapter.MovieHolder> {
     private static String LOG_TAG = "MovieRecyclerViewAdapter";
     private ArrayList<Movie> movieList;
-    //private LayoutInflater inflater;
     private static MovieClickListener movieClickListener;
-    private Context mContext;
+    protected View mItemView;
+    protected RecyclerView mRecyclerView;
+    protected int mWidth;
 
-    public MovieRecyclerViewAdapter(Context context, ArrayList<Movie> movieList) {
-        //inflater = LayoutInflater.from(context);
+    public MovieRecyclerViewAdapter(ArrayList<Movie> movieList) {
         this.movieList = movieList;
-        mContext = context;
     }
 
     public class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView imageView;
+        protected ImageView imageView;
 
         public MovieHolder(View itemView) {
             super(itemView);
 
-            imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            mItemView = itemView;
+            imageView = (ImageView) itemView.findViewById(R.id.thumbnail_image_view);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            movieClickListener.onItemClick(getPosition(), v);
+            movieClickListener.onItemClick(getLayoutPosition(), v);
         }
 
     }
 
     public void setOnItemClickListener(MovieClickListener movieClickListener) {
-        this.movieClickListener = movieClickListener;
+        MovieRecyclerViewAdapter.movieClickListener = movieClickListener;
     }
 
     public MovieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, parent, false);
+        if(mRecyclerView == null) {
+            mRecyclerView = (RecyclerView) parent;
+            mWidth = mRecyclerView.getWidth() / 2;
+        }
 
-        MovieHolder movieHolder = new MovieHolder(view);
-        return movieHolder;
+        return new MovieHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(MovieHolder holder, int position) {
+    public void onBindViewHolder(final MovieHolder holder, int position) {
         Movie movie = movieList.get(position);
+        final String url = movie.getThumbnailPath();
 
-        Picasso.with(mContext)
-                .load(movie.getPoster_path())
-                .fit()
-                .into(holder.imageView);
-    }
-
-    public void addItem(Movie movie, int index) {
-        movieList.add(movie);
-        notifyItemInserted(index);
-    }
-
-    public void deleteItem(int index) {
-        movieList.remove(index);
-        notifyItemRemoved(index);
+        Picasso.with(mRecyclerView.getContext())
+            .load(movie.getThumbnailPath())
+            //TODO: java.lang.IllegalArgumentException: At least one dimension has to be positive number.
+            .resize(mWidth, 0)
+            .into(holder.imageView);
     }
 
     @Override
     public int getItemCount() {
-        return movieList.size();
+            return movieList.size();
     }
 
     public interface MovieClickListener {
@@ -88,5 +84,4 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     public Movie getItem(int position) {
         return movieList.get(position);
     }
-
 }

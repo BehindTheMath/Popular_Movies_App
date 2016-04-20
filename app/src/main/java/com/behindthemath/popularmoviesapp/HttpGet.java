@@ -3,26 +3,32 @@ package com.behindthemath.popularmoviesapp;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Created by aryeh on 3/21/2016.
  */
-class HttpGet extends AsyncTask<String, Void, String> {
+class HttpGet extends AsyncTask<String, Void, ArrayList<Movie>> {
 
     @Override
-    protected String doInBackground(String... params) {
+    protected ArrayList<Movie> doInBackground(String... params) {
         //TODO: https://gist.github.com/udacityandroid/d6a7bb21904046a91695
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String LOG_TAG = "HttpGet";
+        ArrayList<Movie> movieList;
 
         // Will contain the raw JSON response as a string.
         String responseJSON;
@@ -77,6 +83,18 @@ class HttpGet extends AsyncTask<String, Void, String> {
                 }
             }
         }
-        return responseJSON;
+
+        //responseJSON = APIKey.getJSON();
+        //return responseJSON;
+        try {
+            //Log.i(LOG_TAG, "onPostExecute()");
+            JSONObject jsonObject = new JSONObject(responseJSON);
+            JSONArray jsonArray = jsonObject.getJSONArray("results");
+            movieList = Movie.parseJsonArray(jsonArray);
+            return movieList;
+        } catch (final JSONException e) {
+            Log.e(LOG_TAG, e.toString());
+            e.printStackTrace(); }
+        return null;
     }
 }

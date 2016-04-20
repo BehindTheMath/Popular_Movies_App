@@ -1,19 +1,30 @@
+//https://github.com/michel-kraemer/gradle-download-task
+plugins {
+    id "de.undercouch.download" version "2.1.0"
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+import de.undercouch.gradle.tasks.download.Download
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.behindthemath.popularmoviesapp"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
+        debug {
+            useProguard false
+        }
         release {
             minifyEnabled false
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -23,14 +34,23 @@ repositories {
     mavenCentral()
 }
 
-apply plugin: 'com.neenbedankt.android-apt'
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
+    //compile 'com.jakewharton:butterknife:7.0.1'
     compile 'org.parceler:parceler-api:1.0.4'
     apt 'org.parceler:parceler:1.0.4'
 }
+
+task downloadFile (type: Download, description : "Download AutoResizeTextView.java") {
+    src 'https://raw.githubusercontent.com/AndroidDeveloperLB/AutoFitTextView/master/AutoFitTextViewLibrary/src/com/lb/auto_fit_textview/AutoResizeTextView.java'
+    dest new File('app/src/main/java/com/lb/auto_fit_textview', 'AutoResizeTextView.java')
+    //dest 'AutoResizeTextView.java'
+    onlyIfNewer true
+}
+
+//defaultTasks 'downloadFile'
+preBuild.dependsOn downloadFile

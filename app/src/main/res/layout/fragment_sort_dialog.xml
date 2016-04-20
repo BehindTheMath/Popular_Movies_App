@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/dialog_margin"
+    android:checkedButton="@+id/highest_rated_radiobutton2"
+    android:id="@+id/radio_group">
+
+    <RadioButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Most Popular"
+        android:id="@+id/most_popular_radiobutton" />
+
+    <RadioButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Highest Rated"
+        android:id="@+id/highest_rated_radiobutton" />
+
+
+
+</RadioGroup>

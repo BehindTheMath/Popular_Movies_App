@@ -1,11 +1,43 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/Indigo500</item>
+        <item name="colorPrimaryDark">@color/Indigo700</item>
+
+        <!-- Apply default style for dialogs -->
+        <item name="android:dialogTheme">@style/AppDialogTheme</item>
     </style>
 
+    <!-- Define your custom dialog theme here extending from base -->
+    <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Define color properties as desired -->
+        <!--
+        <item name="colorPrimary">@color/Indigo500</item>
+        <item name="colorPrimaryDark">@color/Indigo700</item>
+        <item name="android:textColorHighlight">@color/light_blue</item>
+        <item name="colorAccent">@color/dark_blue</item>
+        <item name="colorControlNormal">@color/dark_blue</item>
+        -->
+        <!-- Define window properties as desired -->
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <!--<item name="android:windowBackground">@color/medium_green</item>-->
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle</item>
+    </style>
+
+    <style name="DialogWindowTitle" parent="Base.DialogWindowTitle.AppCompat">
+        <!--<item name="android:background">@color/Indigo500</item>-->
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/DialogWindowTitleText</item>
+        <!--<item name="android:padding">@dimen/dialog_margin</item>-->
+    </style>
+
+    <style name="DialogWindowTitleText" parent="@android:style/TextAppearance.DialogWindowTitle">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
