@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             MovieListFragment fragment = new MovieListFragment();
+            fragment.setRetainInstance(true);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frame, fragment)
                     .commit();
