@@ -33,7 +33,6 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
     private static final String BUNDLE_RECYCLER_STATE = "MovieListFragment.mRecyclerView.state";
     private int index = -1;
     private int top = -1;
-    private boolean mMovieSelected;
     //TODO: https://github.com/codepath/android_guides/wiki/Implementing-Pull-to-Refresh-Guide#recyclerview-with-swiperefreshlayout
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -45,14 +44,6 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
     }
 
     public MovieListFragment(){}
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Initialize dataset, this data would usually come from a local content provider or remote server.
-        getMovies();
-    }
 
     @Nullable
     @Override
@@ -86,13 +77,10 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
         super.onResume();
 
         Log.i(LOG_TAG, "onResume");
-        if(mMovieSelected) {
-            getMovies();
-            //set recyclerview position
-            if(index != RecyclerView.NO_POSITION) {
-                mLayoutManager.scrollToPositionWithOffset(index, top);
-            }
-            mMovieSelected = false;
+        getMovies();
+        //set recyclerview position
+        if(index != RecyclerView.NO_POSITION) {
+            mLayoutManager.scrollToPositionWithOffset(index, top);
         }
     }
 
@@ -110,7 +98,9 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(BUNDLE_RECYCLER_STATE, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        if (swipeRefreshLayout != null) {
+            outState.putParcelable(BUNDLE_RECYCLER_STATE, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        }
     }
 
     @Override
@@ -120,7 +110,9 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
         if(savedInstanceState != null)
         {
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_STATE);
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+            if (mRecyclerView != null) {
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+            }
         }
     }
 
@@ -158,6 +150,7 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
 
     public void onMovieSelected(Movie movie){
         final MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);
+        fragment.setRetainInstance(true);
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame, fragment)
                 .addToBackStack(null)
@@ -209,6 +202,7 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
         mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
+        //TODO: add logic for various widths based on screen size
         mLayoutManager = new GridLayoutManager(getActivity(), 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -218,7 +212,6 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
         mAdapter.setOnItemClickListener(new MovieRecyclerViewAdapter.MovieClickListener() {
             @Override
             public void onItemClick(int position, View view) {
-                mMovieSelected = true;
                 Movie movie = mAdapter.getItem(position);
                 onMovieSelected(movie);
             }
