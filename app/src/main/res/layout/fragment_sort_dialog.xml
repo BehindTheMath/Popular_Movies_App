@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/dialog_margin"
-    android:checkedButton="@+id/highest_rated_radiobutton2"
+    android:checkedButton="@+id/highest_rated_radiobutton"
     android:id="@+id/radio_group">
 
     <RadioButton
