@@ -31,6 +31,7 @@ public class MovieDetailsFragment extends Fragment {
         final Bundle args = getArguments();
         Movie movie = Parcels.unwrap(args.getParcelable(ARGUMENT_MESSAGE));
 
+        //TODO: Butterknife
         AutoResizeTextView originalTitle = (AutoResizeTextView) view.findViewById(R.id.original_title);
         ImageView thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
         TextView releaseYear = (TextView) view.findViewById(R.id.release_year);
