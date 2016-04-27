@@ -20,11 +20,15 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * Created by aryeh on 3/21/2016.
  */
 public class MovieListFragment extends Fragment /*implements SortDialogFragment.OnSortSelectedListener*/ {
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     private MovieRecyclerViewAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
     private final String LOG_TAG = getClass().toString();
@@ -34,7 +38,8 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
     private int index = -1;
     private int top = -1;
     //TODO: https://github.com/codepath/android_guides/wiki/Implementing-Pull-to-Refresh-Guide#recyclerview-with-swiperefreshlayout
-    private SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
+    private Unbinder unbinder;
 
     //TODO: Replace with API Key
     private final String apiKey = APIKey.getKey();
@@ -52,7 +57,8 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
         setHasOptionsMenu(true);
 
         // Lookup the swipe container view
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        //swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        unbinder = ButterKnife.bind(this, view);
         // Setup refresh listener which triggers new data loading
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -95,6 +101,12 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -111,7 +123,12 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
         {
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_STATE);
             if (mRecyclerView != null) {
-                mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+                if (layoutManager != null) {
+                    layoutManager.onRestoreInstanceState(savedRecyclerLayoutState);
+                } else {
+                    initializeRecyclerView();
+                }
             }
         }
     }
@@ -171,6 +188,7 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
 
             switch(mSortOrder) {
                 case SORT_MOST_POPULAR:
+                    //TODO: convert to URI/URL? https://stackoverflow.com/questions/19167954/use-uri-builder-in-android-or-create-url-with-variables
                 httpGet.execute("http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey);
                     break;
                 case SORT_HIGHEST_RATED:
@@ -199,7 +217,7 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
     }
 
     private void initializeRecyclerView() {
-        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view);
+        //mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         //TODO: add logic for various widths based on screen size

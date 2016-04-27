@@ -11,14 +11,20 @@ import android.widget.RadioGroup;
 
 import com.behindthemath.popularmoviesapp.MovieListFragment.SortType;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+
 /**
  * Created by aryeh on 3/30/2016.
  */
-public class SortDialogFragment extends AppCompatDialogFragment implements View.OnClickListener {
-    RadioButton mMostPopularRadioButton;
-    RadioButton mHighestRatedRadioButton;
-    RadioGroup mRadioGroup;
+public class SortDialogFragment extends AppCompatDialogFragment /*implements View.OnClickListener*/ {
+    @BindView(R.id.most_popular_radiobutton) RadioButton mMostPopularRadioButton;
+    @BindView(R.id.highest_rated_radiobutton) RadioButton mHighestRatedRadioButton;
+    @BindView(R.id.radio_group) RadioGroup mRadioGroup;
     public final String LOG_TAG = this.getClass().getName();
+    private Unbinder unbinder;
 
     public SortDialogFragment(){}
 
@@ -30,16 +36,17 @@ public class SortDialogFragment extends AppCompatDialogFragment implements View.
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        unbinder = ButterKnife.bind(this, view);
 
         // Set title
         getDialog().setTitle("Select Sort Order");
 
-        mRadioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
+        //mRadioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
         // Get fields from view
-        mMostPopularRadioButton = (RadioButton) view.findViewById(R.id.most_popular_radiobutton);
-        mMostPopularRadioButton.setOnClickListener(this);
-        mHighestRatedRadioButton = (RadioButton) view.findViewById(R.id.highest_rated_radiobutton);
-        mHighestRatedRadioButton.setOnClickListener(this);
+        //mMostPopularRadioButton = (RadioButton) view.findViewById(R.id.most_popular_radiobutton);
+        //mMostPopularRadioButton.setOnClickListener(this);
+        //mHighestRatedRadioButton = (RadioButton) view.findViewById(R.id.highest_rated_radiobutton);
+        //mHighestRatedRadioButton.setOnClickListener(this);
 
         switch(MovieListFragment.mSortOrder){
             case SORT_MOST_POPULAR:
@@ -52,6 +59,13 @@ public class SortDialogFragment extends AppCompatDialogFragment implements View.
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    //@Override
+    @OnClick({R.id.most_popular_radiobutton, R.id.highest_rated_radiobutton})
     public void onClick(View view) {
         SortType sortOrder;
 

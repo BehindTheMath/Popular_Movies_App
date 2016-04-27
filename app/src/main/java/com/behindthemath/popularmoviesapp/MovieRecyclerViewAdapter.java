@@ -10,6 +10,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 //import butterknife.Bind;
 //import butterknife.ButterKnife;
 
@@ -29,13 +32,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     }
 
     public class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        protected ImageView imageView;
+        protected @BindView(R.id.thumbnail_image_view) ImageView imageView;
 
         public MovieHolder(View itemView) {
             super(itemView);
 
             mItemView = itemView;
-            imageView = (ImageView) itemView.findViewById(R.id.thumbnail_image_view);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 
@@ -67,6 +70,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
         Picasso.with(mRecyclerView.getContext())
             .load(movie.getThumbnailPath())
+            .error(R.drawable.ic_warning_black_24dp)
             //TODO: java.lang.IllegalArgumentException: At least one dimension has to be positive number.
             .resize(mWidth, 0)
             .into(holder.imageView);
