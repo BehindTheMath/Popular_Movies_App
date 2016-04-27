@@ -41,13 +41,6 @@ public class SortDialogFragment extends AppCompatDialogFragment /*implements Vie
         // Set title
         getDialog().setTitle("Select Sort Order");
 
-        //mRadioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
-        // Get fields from view
-        //mMostPopularRadioButton = (RadioButton) view.findViewById(R.id.most_popular_radiobutton);
-        //mMostPopularRadioButton.setOnClickListener(this);
-        //mHighestRatedRadioButton = (RadioButton) view.findViewById(R.id.highest_rated_radiobutton);
-        //mHighestRatedRadioButton.setOnClickListener(this);
-
         switch(MovieListFragment.mSortOrder){
             case SORT_MOST_POPULAR:
                 mRadioGroup.check(R.id.most_popular_radiobutton);
@@ -64,7 +57,6 @@ public class SortDialogFragment extends AppCompatDialogFragment /*implements Vie
         unbinder.unbind();
     }
 
-    //@Override
     @OnClick({R.id.most_popular_radiobutton, R.id.highest_rated_radiobutton})
     public void onClick(View view) {
         SortType sortOrder;

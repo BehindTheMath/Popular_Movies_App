@@ -13,9 +13,6 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-//import butterknife.Bind;
-//import butterknife.ButterKnife;
-
 /**
  * Created by aryeh on 3/21/2016.
  */

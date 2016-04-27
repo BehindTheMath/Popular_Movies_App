@@ -27,7 +27,7 @@ import butterknife.Unbinder;
 /**
  * Created by aryeh on 3/21/2016.
  */
-public class MovieListFragment extends Fragment /*implements SortDialogFragment.OnSortSelectedListener*/ {
+public class MovieListFragment extends Fragment {
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     private MovieRecyclerViewAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
@@ -56,8 +56,6 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
         final View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
         setHasOptionsMenu(true);
 
-        // Lookup the swipe container view
-        //swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         unbinder = ButterKnife.bind(this, view);
         // Setup refresh listener which triggers new data loading
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -217,7 +215,6 @@ public class MovieListFragment extends Fragment /*implements SortDialogFragment.
     }
 
     private void initializeRecyclerView() {
-        //mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         //TODO: add logic for various widths based on screen size
