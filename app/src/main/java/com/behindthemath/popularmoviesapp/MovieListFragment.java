@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * Created by aryeh on 3/21/2016.
+ * Created by BehindTheMath on 3/21/2016.
  */
 public class MovieListFragment extends Fragment {
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;

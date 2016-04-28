@@ -8,7 +8,7 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 
 /**
- * Created by aryeh on 3/21/2016.
+ * Created by BehindTheMath on 3/21/2016.
  */
 @Parcel
 public class Movie {

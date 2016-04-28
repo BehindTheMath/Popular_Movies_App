@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Created by aryeh on 3/21/2016.
+ * Created by BehindTheMath on 3/21/2016.
  */
 class HttpGet extends AsyncTask<String, Void, ArrayList<Movie>> {
 

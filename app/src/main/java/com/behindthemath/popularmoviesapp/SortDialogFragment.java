@@ -17,7 +17,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
- * Created by aryeh on 3/30/2016.
+ * Created by BehindTheMath on 3/30/2016.
  */
 public class SortDialogFragment extends AppCompatDialogFragment /*implements View.OnClickListener*/ {
     @BindView(R.id.most_popular_radiobutton) RadioButton mMostPopularRadioButton;

@@ -20,7 +20,7 @@ import butterknife.Unbinder;
 
 
 /**
- * Created by aryeh on 3/21/2016.
+ * Created by BehindTheMath on 3/21/2016.
  */
 public class MovieDetailsFragment extends Fragment {
     private static final String ARGUMENT_MESSAGE = "message";
@@ -41,14 +41,6 @@ public class MovieDetailsFragment extends Fragment {
 
         final Bundle args = getArguments();
         Movie movie = Parcels.unwrap(args.getParcelable(ARGUMENT_MESSAGE));
-
-        /*
-        AutoResizeTextView originalTitle = (AutoResizeTextView) view.findViewById(R.id.original_title);
-        ImageView thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
-        TextView releaseYear = (TextView) view.findViewById(R.id.release_year);
-        TextView voteAverage = (TextView) view.findViewById(R.id.vote_average);
-        TextView overview = (TextView) view.findViewById(R.id.overview);
-        */
 
         originalTitle.setText(movie.getOriginalTitle());
         originalTitle.setLines(1);

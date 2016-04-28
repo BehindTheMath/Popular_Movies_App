@@ -14,7 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by aryeh on 3/21/2016.
+ * Created by BehindTheMath on 3/21/2016.
  */
 public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecyclerViewAdapter.MovieHolder> {
     private static String LOG_TAG = "MovieRecyclerViewAdapter";
