@@ -42,16 +42,7 @@ public class MovieDetailsFragment extends Fragment {
         final Bundle args = getArguments();
         Movie movie = Parcels.unwrap(args.getParcelable(ARGUMENT_MESSAGE));
 
-        originalTitle.setText(movie.getOriginalTitle());
-        originalTitle.setLines(1);
-
-        Picasso.with(getContext()).load(movie.getThumbnailPath()).into(thumbnail);
-
-        releaseYear.setText(movie.getReleaseYear());
-
-        voteAverage.setText(movie.getVoteAverage().toString() + "/10");
-        overview.setText(movie.getOverview());
-
+        load(movie);
         return view;
     }
 
@@ -61,6 +52,17 @@ public class MovieDetailsFragment extends Fragment {
         unbinder.unbind();
     }
 
+    public void load(Movie movie){
+        originalTitle.setText(movie.getOriginalTitle());
+        originalTitle.setLines(1);
+
+        Picasso.with(getContext()).load(movie.getThumbnailPath()).into(thumbnail);
+
+        releaseYear.setText(movie.getReleaseYear());
+
+        voteAverage.setText(movie.getVoteAverage().toString() + "/10");
+        overview.setText(movie.getOverview());
+    }
     public static MovieDetailsFragment newInstance(Movie movie) {
         final Bundle args = new Bundle();
         args.putParcelable(ARGUMENT_MESSAGE, Parcels.wrap(movie));

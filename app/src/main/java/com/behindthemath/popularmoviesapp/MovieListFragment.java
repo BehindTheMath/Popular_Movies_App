@@ -32,7 +32,7 @@ public class MovieListFragment extends Fragment {
     private MovieRecyclerViewAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
     private final String LOG_TAG = getClass().toString();
-    private ArrayList<Movie> mMovieList;
+    private static ArrayList<Movie> mMovieList;
     public static SortType mSortOrder = SortType.SORT_MOST_POPULAR;
     private static final String BUNDLE_RECYCLER_STATE = "MovieListFragment.mRecyclerView.state";
     private int index = -1;
@@ -40,6 +40,8 @@ public class MovieListFragment extends Fragment {
     //TODO: https://github.com/codepath/android_guides/wiki/Implementing-Pull-to-Refresh-Guide#recyclerview-with-swiperefreshlayout
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
     private Unbinder unbinder;
+    private MoviesLoadedListener mMoviesLoadedListener;
+    private boolean mDualPane;
 
     //TODO: Replace with API Key
     private final String apiKey = APIKey.getKey();
@@ -49,6 +51,13 @@ public class MovieListFragment extends Fragment {
     }
 
     public MovieListFragment(){}
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mDualPane = ((MainActivity) getActivity()).isDualPane();
+    }
 
     @Nullable
     @Override
@@ -164,12 +173,25 @@ public class MovieListFragment extends Fragment {
     }
 
     public void onMovieSelected(Movie movie){
-        final MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);
-        fragment.setRetainInstance(true);
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame, fragment)
-                .addToBackStack(null)
-                .commit();
+        if(mDualPane){
+            MovieDetailsFragment movieDetailsFragment = (MovieDetailsFragment) getActivity().getSupportFragmentManager().findFragmentByTag(MovieDetailsFragment.class.getName());
+            movieDetailsFragment.load(movie);
+        } else {
+            final MovieDetailsFragment movieDetailsFragment = MovieDetailsFragment.newInstance(movie);
+            movieDetailsFragment.setRetainInstance(true);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame, movieDetailsFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
+    public interface MoviesLoadedListener {
+        void onMoviesLoaded();
+    }
+
+    public void setMoviesLoadedListener(MoviesLoadedListener moviesLoadedListener){
+        mMoviesLoadedListener = moviesLoadedListener;
     }
 
     private void getMovies() {
@@ -181,6 +203,7 @@ public class MovieListFragment extends Fragment {
                     swipeRefreshLayout.setRefreshing(false);
                     mMovieList = movieList;
                     initializeRecyclerView();
+                    if (mDualPane) { mMoviesLoadedListener.onMoviesLoaded(); }
                 }
             };
 
@@ -215,6 +238,7 @@ public class MovieListFragment extends Fragment {
     }
 
     private void initializeRecyclerView() {
+        //TODO: minimize usage of this method
         mRecyclerView.setHasFixedSize(true);
 
         //TODO: add logic for various widths based on screen size
@@ -226,11 +250,14 @@ public class MovieListFragment extends Fragment {
 
         mAdapter.setOnItemClickListener(new MovieRecyclerViewAdapter.MovieClickListener() {
             @Override
-            public void onItemClick(int position, View view) {
+            public void onItemClick(int position) {
                 Movie movie = mAdapter.getItem(position);
                 onMovieSelected(movie);
             }
         });
+    }
 
+    public Movie getFirstMovie(){
+        return mMovieList.get(0);
     }
 }
