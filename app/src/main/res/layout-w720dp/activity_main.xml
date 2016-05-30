@@ -17,18 +17,21 @@
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:weightSum="2"
+        android:baselineAligned="false"
         tools:ignore="InconsistentLayout">
 
         <FrameLayout
-            android:id="@+id/frame"
+            android:id="@+id/frame_layout_list"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent" />
 
         <FrameLayout
-            android:id="@+id/frame2"
+            android:id="@+id/frame_layout_details"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent" />
+
     </LinearLayout>
+
 </LinearLayout>

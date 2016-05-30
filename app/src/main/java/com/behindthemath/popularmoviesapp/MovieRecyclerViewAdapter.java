@@ -16,22 +16,22 @@ import butterknife.ButterKnife;
 /**
  * Created by BehindTheMath on 3/21/2016.
  */
-public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecyclerViewAdapter.MovieHolder> {
+public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecyclerViewAdapter.ViewHolder> {
     private static String LOG_TAG = "MovieRecyclerViewAdapter";
-    private ArrayList<Movie> mMovieList;
-    private static MovieClickListener movieClickListener;
-    protected View mItemView;
+    private ArrayList<Movie> mMovieList = new ArrayList<>();
+    private static ItemClickListener itemClickListener;
+    private View mItemView;
     private RecyclerView mRecyclerView;
     private int mWidth;
 
-    public MovieRecyclerViewAdapter(ArrayList<Movie> movieList) {
-        this.mMovieList = movieList;
+    public MovieRecyclerViewAdapter() {
+        updateList();
     }
 
-    public class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected @BindView(R.id.thumbnail_image_view) ImageView imageView;
 
-        public MovieHolder(View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
 
             mItemView = itemView;
@@ -40,28 +40,28 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         }
 
         @Override
-        public void onClick(View v) {
-            movieClickListener.onItemClick(getLayoutPosition());
+        public void onClick(View view) {
+            itemClickListener.onItemClick(mMovieList.get(getLayoutPosition()), getLayoutPosition());
         }
 
     }
 
-    public void setOnItemClickListener(MovieClickListener movieClickListener) {
-        MovieRecyclerViewAdapter.movieClickListener = movieClickListener;
+    public void setOnItemClickListener(ItemClickListener itemClickListener) {
+        MovieRecyclerViewAdapter.itemClickListener = itemClickListener;
     }
 
-    public MovieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, parent, false);
         if(mRecyclerView == null) {
             mRecyclerView = (RecyclerView) parent;
             mWidth = mRecyclerView.getWidth() / 2;
         }
 
-        return new MovieHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final MovieHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         Movie movie = mMovieList.get(position);
         final String url = movie.getThumbnailPath();
 
@@ -78,11 +78,15 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             return mMovieList.size();
     }
 
-    public interface MovieClickListener {
-        void onItemClick(int position);
+    public interface ItemClickListener {
+        void onItemClick(Movie movie, int position);
     }
 
     public Movie getItem(int position) {
         return mMovieList.get(position);
+    }
+
+    public void updateList(){
+        this.mMovieList = MovieList.getMovieList();
     }
 }

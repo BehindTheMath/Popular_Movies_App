@@ -1,11 +1,8 @@
 package com.behindthemath.popularmoviesapp;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
-
-import java.util.ArrayList;
 
 /**
  * Created by BehindTheMath on 3/21/2016.
@@ -69,25 +66,5 @@ public class Movie {
         }
         // Return new object
         return movie;
-    }
-
-    public static ArrayList<Movie> parseJsonArray(JSONArray jsonArray) {
-        JSONObject movieJson;
-        ArrayList<Movie> movies = new ArrayList<Movie>(jsonArray.length());
-        // Process each result in json array, decode and convert to business object
-        for (int i = 0; i < jsonArray.length(); i++) {
-            try {
-                movieJson = jsonArray.getJSONObject(i);
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
-
-            Movie movie = Movie.fromJson(movieJson);
-            if (movie != null) {
-                movies.add(movie);
-            }
-        }
-        return movies;
     }
 }

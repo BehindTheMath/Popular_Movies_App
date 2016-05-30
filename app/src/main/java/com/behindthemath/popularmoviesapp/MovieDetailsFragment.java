@@ -3,6 +3,7 @@ package com.behindthemath.popularmoviesapp;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,20 +31,44 @@ public class MovieDetailsFragment extends Fragment {
     @BindView(R.id.vote_average) TextView voteAverage;
     @BindView(R.id.overview) TextView overview;
     private Unbinder unbinder;
+    private Movie mMovie;
+    private boolean mReadyForInitialization = false;
+    private final static String LOG_TAG = MovieDetailsFragment.class.getName();
 
     public MovieDetailsFragment(){}
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onCreateView");
         final View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        final Bundle args = getArguments();
-        Movie movie = Parcels.unwrap(args.getParcelable(ARGUMENT_MESSAGE));
+        if (savedInstanceState == null) {
+            final Bundle arguments = getArguments();
+            if (arguments != null) {
+                mMovie = Parcels.unwrap(arguments.getParcelable(ARGUMENT_MESSAGE));
+                load();
+            }
+        } else {
+            if (mMovie == null) {
+                mMovie = Parcels.unwrap(savedInstanceState.getParcelable("mMovie"));
+                load();
+            }
+        }
 
-        load(movie);
+        if (mReadyForInitialization){
+            load();
+        } else {
+            mReadyForInitialization = true;
+        }
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("mMovie", Parcels.wrap(mMovie));
     }
 
     @Override
@@ -52,17 +77,28 @@ public class MovieDetailsFragment extends Fragment {
         unbinder.unbind();
     }
 
-    public void load(Movie movie){
-        originalTitle.setText(movie.getOriginalTitle());
+    public void setMovie(Movie movie, boolean reSorted){
+        mMovie = movie;
+        if (mReadyForInitialization || reSorted) {
+            load();
+        } else {
+            mReadyForInitialization = true;
+        }
+
+    }
+
+    private void load(){
+        originalTitle.setText(mMovie.getOriginalTitle());
         originalTitle.setLines(1);
 
-        Picasso.with(getContext()).load(movie.getThumbnailPath()).into(thumbnail);
+        Picasso.with(getContext()).load(mMovie.getThumbnailPath()).into(thumbnail);
 
-        releaseYear.setText(movie.getReleaseYear());
+        releaseYear.setText(mMovie.getReleaseYear());
 
-        voteAverage.setText(movie.getVoteAverage().toString() + "/10");
-        overview.setText(movie.getOverview());
+        voteAverage.setText(mMovie.getVoteAverage().toString().concat("/10"));
+        overview.setText(mMovie.getOverview());
     }
+
     public static MovieDetailsFragment newInstance(Movie movie) {
         final Bundle args = new Bundle();
         args.putParcelable(ARGUMENT_MESSAGE, Parcels.wrap(movie));

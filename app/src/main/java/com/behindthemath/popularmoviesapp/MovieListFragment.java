@@ -15,10 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,32 +28,16 @@ public class MovieListFragment extends Fragment {
     private MovieRecyclerViewAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
     private final String LOG_TAG = getClass().toString();
-    private static ArrayList<Movie> mMovieList;
-    public static SortType mSortOrder = SortType.SORT_MOST_POPULAR;
     private static final String BUNDLE_RECYCLER_STATE = "MovieListFragment.mRecyclerView.state";
     private int index = -1;
     private int top = -1;
     //TODO: https://github.com/codepath/android_guides/wiki/Implementing-Pull-to-Refresh-Guide#recyclerview-with-swiperefreshlayout
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
     private Unbinder unbinder;
-    private MoviesLoadedListener mMoviesLoadedListener;
-    private boolean mDualPane;
-
-    //TODO: Replace with API Key
-    private final String apiKey = APIKey.getKey();
-
-    public enum SortType {
-        SORT_MOST_POPULAR, SORT_HIGHEST_RATED
-    }
+    private boolean mReadyForInitialization = false;
+    private MovieList mMovieList;
 
     public MovieListFragment(){}
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mDualPane = ((MainActivity) getActivity()).isDualPane();
-    }
 
     @Nullable
     @Override
@@ -65,7 +45,19 @@ public class MovieListFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
         setHasOptionsMenu(true);
 
+        Log.i(LOG_TAG, "onCreateView");
         unbinder = ButterKnife.bind(this, view);
+
+        mMovieList = ((MainActivity) getActivity()).getMovieList();
+
+        mRecyclerView.setHasFixedSize(true);
+
+        //TODO: add logic for various widths based on screen size
+        mLayoutManager = new GridLayoutManager(getContext(), 2);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        initializeRecyclerView();
+        mReadyForInitialization = true;
+
         // Setup refresh listener which triggers new data loading
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -73,7 +65,9 @@ public class MovieListFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeRefreshLayout.setRefreshing(false)
                 // once the network request has completed successfully.
-                getMovies();
+                if(!(mMovieList.getMovies())){
+                    getActivity().finish();
+                }
             }
         });
         // Configure the refreshing colors
@@ -90,8 +84,7 @@ public class MovieListFragment extends Fragment {
         super.onResume();
 
         Log.i(LOG_TAG, "onResume");
-        getMovies();
-        //set recyclerview position
+
         if(index != RecyclerView.NO_POSITION) {
             mLayoutManager.scrollToPositionWithOffset(index, top);
         }
@@ -126,14 +119,17 @@ public class MovieListFragment extends Fragment {
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if(savedInstanceState != null)
-        {
+        Log.i(LOG_TAG, "onViewStateRestored");
+        if (savedInstanceState != null){
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_STATE);
             if (mRecyclerView != null) {
                 RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
                 if (layoutManager != null) {
                     layoutManager.onRestoreInstanceState(savedRecyclerLayoutState);
                 } else {
+                    mLayoutManager = new GridLayoutManager(getContext(), 2);
+                    mRecyclerView.setLayoutManager(mLayoutManager);
+
                     initializeRecyclerView();
                 }
             }
@@ -157,6 +153,7 @@ public class MovieListFragment extends Fragment {
         if (id == R.id.sort) {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             SortDialogFragment sortDialogFragment = new SortDialogFragment();
+            sortDialogFragment.setOnSortChangedListener((MainActivity) getActivity());
             sortDialogFragment.setTargetFragment(this, 0);
             sortDialogFragment.show(fragmentManager, "fragment_sort_dialog");
 
@@ -165,99 +162,24 @@ public class MovieListFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void OnSortSelected(SortType sortOrder) {
-        if(!(sortOrder.equals(mSortOrder))) {
-            mSortOrder = sortOrder;
-            getMovies();
-        }
-    }
-
-    public void onMovieSelected(Movie movie){
-        if(mDualPane){
-            MovieDetailsFragment movieDetailsFragment = (MovieDetailsFragment) getActivity().getSupportFragmentManager().findFragmentByTag(MovieDetailsFragment.class.getName());
-            movieDetailsFragment.load(movie);
+    public void onGetMoviesCompleted(boolean reSorted){
+        Log.i(LOG_TAG, "onGetMoviesCompleted");
+        if (swipeRefreshLayout != null) { swipeRefreshLayout.setRefreshing(false); }
+        if (mReadyForInitialization || reSorted) {
+            mAdapter.updateList();
+            mAdapter.notifyDataSetChanged();
         } else {
-            final MovieDetailsFragment movieDetailsFragment = MovieDetailsFragment.newInstance(movie);
-            movieDetailsFragment.setRetainInstance(true);
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frame, movieDetailsFragment)
-                    .addToBackStack(null)
-                    .commit();
+            mReadyForInitialization = true;
         }
-    }
-
-    public interface MoviesLoadedListener {
-        void onMoviesLoaded();
-    }
-
-    public void setMoviesLoadedListener(MoviesLoadedListener moviesLoadedListener){
-        mMoviesLoadedListener = moviesLoadedListener;
-    }
-
-    private void getMovies() {
-        if (isOnline()) {
-            HttpGet httpGet = new HttpGet(){
-                @Override
-                protected void onPostExecute(ArrayList<Movie> movieList) {
-                    Log.i(LOG_TAG, "OnPostExecute");
-                    swipeRefreshLayout.setRefreshing(false);
-                    mMovieList = movieList;
-                    initializeRecyclerView();
-                    if (mDualPane) { mMoviesLoadedListener.onMoviesLoaded(); }
-                }
-            };
-
-            switch(mSortOrder) {
-                case SORT_MOST_POPULAR:
-                    //TODO: convert to URI/URL? https://stackoverflow.com/questions/19167954/use-uri-builder-in-android-or-create-url-with-variables
-                httpGet.execute("http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey);
-                    break;
-                case SORT_HIGHEST_RATED:
-                httpGet.execute("http://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey);
-                    break;
-            }
-        } else {
-            Toast.makeText(getActivity(), "No connection!", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-        }
-    }
-
-    private boolean isOnline() {
-        //TODO: https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-timeouts/27312494#27312494
-        Runtime runtime = Runtime.getRuntime();
-        try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
-        } catch (IOException e)          {
-            Log.i(LOG_TAG, "IOException");
-            e.printStackTrace(); }
-          catch (InterruptedException e) { e.printStackTrace(); }
-
-        return false;
     }
 
     private void initializeRecyclerView() {
         //TODO: minimize usage of this method
-        mRecyclerView.setHasFixedSize(true);
+        mReadyForInitialization = false;
 
-        //TODO: add logic for various widths based on screen size
-        mLayoutManager = new GridLayoutManager(getActivity(), 2);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mAdapter = new MovieRecyclerViewAdapter(mMovieList);
+        mAdapter = new MovieRecyclerViewAdapter();
         mRecyclerView.setAdapter(mAdapter);
 
-        mAdapter.setOnItemClickListener(new MovieRecyclerViewAdapter.MovieClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Movie movie = mAdapter.getItem(position);
-                onMovieSelected(movie);
-            }
-        });
-    }
-
-    public Movie getFirstMovie(){
-        return mMovieList.get(0);
+        mAdapter.setOnItemClickListener(((MainActivity) getActivity()));
     }
 }

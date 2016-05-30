@@ -10,14 +10,8 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
-<!--
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
--->
     <FrameLayout
-        android:id="@+id/frame"
+        android:id="@+id/frame_layout_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

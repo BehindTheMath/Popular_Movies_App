@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.behindthemath.popularmoviesapp.MovieListFragment.SortType;
+import com.behindthemath.popularmoviesapp.MovieList.SortType;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,8 +23,10 @@ public class SortDialogFragment extends AppCompatDialogFragment /*implements Vie
     @BindView(R.id.most_popular_radiobutton) RadioButton mMostPopularRadioButton;
     @BindView(R.id.highest_rated_radiobutton) RadioButton mHighestRatedRadioButton;
     @BindView(R.id.radio_group) RadioGroup mRadioGroup;
-    public final String LOG_TAG = this.getClass().getName();
+    private final String LOG_TAG = this.getClass().getName();
     private Unbinder unbinder;
+    private OnSortChangedListener mOnSortChangedListener;
+    private SortType mCurrentSortOrder;
 
     public SortDialogFragment(){}
 
@@ -41,7 +43,8 @@ public class SortDialogFragment extends AppCompatDialogFragment /*implements Vie
         // Set title
         getDialog().setTitle("Select Sort Order");
 
-        switch(MovieListFragment.mSortOrder){
+        mCurrentSortOrder = MovieList.getSortOrder();
+        switch(mCurrentSortOrder){
             case SORT_MOST_POPULAR:
                 mRadioGroup.check(R.id.most_popular_radiobutton);
                 break;
@@ -59,24 +62,31 @@ public class SortDialogFragment extends AppCompatDialogFragment /*implements Vie
 
     @OnClick({R.id.most_popular_radiobutton, R.id.highest_rated_radiobutton})
     public void onClick(View view) {
-        SortType sortOrder;
+        SortType newSortOrder;
 
         switch (view.getId()){
             case R.id.most_popular_radiobutton:
-                sortOrder = SortType.SORT_MOST_POPULAR;
+                newSortOrder = SortType.SORT_MOST_POPULAR;
                 break;
             case R.id.highest_rated_radiobutton:
-                sortOrder = SortType.SORT_HIGHEST_RATED;
+                newSortOrder = SortType.SORT_HIGHEST_RATED;
                 break;
             default:
-                sortOrder = SortType.SORT_MOST_POPULAR;
+                newSortOrder = SortType.SORT_MOST_POPULAR;
         }
-        sendBackResult(sortOrder);
+
+        if(newSortOrder != mCurrentSortOrder) {
+            mOnSortChangedListener.onSortChanged(newSortOrder);
+        }
+        dismiss();
     }
 
-    public void sendBackResult(SortType sortOrder) {
-        ((MovieListFragment) getTargetFragment()).OnSortSelected(sortOrder);
-        dismiss();
+    interface OnSortChangedListener {
+        void onSortChanged(SortType sortOrder);
+    }
+
+    public void setOnSortChangedListener(OnSortChangedListener onSortChangedListener){
+        mOnSortChangedListener = onSortChangedListener;
     }
 }
 
