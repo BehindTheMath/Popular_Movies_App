@@ -1,4 +1,4 @@
-package com.behindthemath.popularmoviesapp;
+package io.behindthemath.popularmoviesapp;
 
 import org.json.JSONException;
 import org.json.JSONObject;

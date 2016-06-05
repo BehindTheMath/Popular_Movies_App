@@ -1,4 +1,4 @@
-package com.behindthemath.popularmoviesapp;
+package io.behindthemath.popularmoviesapp;
 
 import android.content.Context;
 import android.util.Log;

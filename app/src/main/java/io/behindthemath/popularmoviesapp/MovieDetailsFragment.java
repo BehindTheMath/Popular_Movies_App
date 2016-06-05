@@ -1,4 +1,4 @@
-package com.behindthemath.popularmoviesapp;
+package io.behindthemath.popularmoviesapp;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -62,6 +62,7 @@ public class MovieDetailsFragment extends Fragment {
         } else {
             mReadyForInitialization = true;
         }
+
         return view;
     }
 

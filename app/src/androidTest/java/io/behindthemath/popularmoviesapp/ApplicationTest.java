@@ -1,4 +1,4 @@
-package com.behindthemath.popularmoviesapp;
+package io.behindthemath.popularmoviesapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

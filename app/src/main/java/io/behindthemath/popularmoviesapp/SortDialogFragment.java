@@ -1,4 +1,4 @@
-package com.behindthemath.popularmoviesapp;
+package io.behindthemath.popularmoviesapp;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,12 +9,11 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.behindthemath.popularmoviesapp.MovieList.SortType;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.behindthemath.popularmoviesapp.MovieList.SortType;
 
 /**
  * Created by BehindTheMath on 3/30/2016.

@@ -11,7 +11,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
-        applicationId "com.behindthemath.popularmoviesapp"
+        applicationId "io.behindthemath.popularmoviesapp"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
@@ -47,11 +47,11 @@ dependencies {
     apt 'org.parceler:parceler:1.0.4'
 }
 
-task downloadFile (type: Download, description : "Download AutoResizeTextView.java") {
+task downloadAutoFitTextView (type: Download, description : "Download AutoResizeTextView.java") {
     src 'https://raw.githubusercontent.com/AndroidDeveloperLB/AutoFitTextView/master/AutoFitTextViewLibrary/src/com/lb/auto_fit_textview/AutoResizeTextView.java'
     dest new File('app/src/main/java/com/lb/auto_fit_textview', 'AutoResizeTextView.java')
     onlyIfNewer true
 }
 
 //defaultTasks 'downloadFile'
-preBuild.dependsOn downloadFile
+preBuild.dependsOn downloadAutoFitTextView

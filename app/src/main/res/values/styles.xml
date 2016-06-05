@@ -33,7 +33,7 @@
         <!--<item name="android:background">@color/Indigo500</item>-->
         <item name="android:gravity">center</item>
         <item name="android:textAppearance">@style/DialogWindowTitleText</item>
-        <!--<item name="android:padding">@dimen/dialog_margin</item>-->
+        <!--<item name="android:padding">@dimen/default_margin</item>-->
     </style>
 
     <style name="DialogWindowTitleText" parent="@android:style/TextAppearance.DialogWindowTitle">

@@ -1,4 +1,4 @@
-package com.behindthemath.popularmoviesapp;
+package io.behindthemath.popularmoviesapp;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
